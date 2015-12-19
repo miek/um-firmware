@@ -22,6 +22,7 @@
 
 #include "simple_ble.h"
 #include "simple_adv.h"
+#include "simple_timer.h"
 
 /*******************************************************************************
  *   State and Configuration
@@ -65,18 +66,8 @@ static void timer_handler (void* p_context) {
  ******************************************************************************/
 
 static void timers_init(void) {
-	uint32_t err_code;
-
-	APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
-
-	err_code = app_timer_create(&characteristic_timer,
-	                            APP_TIMER_MODE_REPEATED,
-	                            timer_handler);
-	APP_ERROR_CHECK(err_code);
-
-	// Start timer to update characteristic
-	err_code = app_timer_start(characteristic_timer, UPDATE_RATE, NULL);
-	APP_ERROR_CHECK(err_code);
+	simple_timer_init();
+	simple_timer_start(1000, timer_handler);
 }
 
 // Init services

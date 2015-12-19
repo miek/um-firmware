@@ -4,8 +4,6 @@
 #define CUSTOM_SERVICE_SHORT_UUID             0xE9DB // service UUID
 #define CUSTOM_SERVICE_CHAR_NUMBER_SHORT_UUID 0xE9DC // our number characteristic
 
-#define UPDATE_RATE APP_TIMER_TICKS(1000, 0)
-
 typedef struct ble_cstm_s
 {
     uint16_t                     service_handle;                        /**< Handle of DFU Service (as provided by the S110 SoftDevice). */
