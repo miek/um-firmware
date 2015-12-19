@@ -49,15 +49,13 @@ static simple_ble_config_t ble_config = {
 // State for this CuSToM service application
 static ble_cstm_t cstm;
 
-// Timer to update our counter
-static app_timer_id_t  characteristic_timer;
-
 /*******************************************************************************
  *   Timer Callback
  ******************************************************************************/
 
 static void timer_handler (void* p_context) {
 	cstm.num_value++;
+	led_toggle(LED_0);
 }
 
 
