@@ -24,17 +24,17 @@
 #include "simple_adv.h"
 #include "simple_timer.h"
 
+
 /*******************************************************************************
  *   State and Configuration
  ******************************************************************************/
 
 // Randomly generated UUID for this service
-const ble_uuid128_t custom_service_uuid128 = {
-	{0x83, 0xbe, 0xd0, 0x58, 0xf1, 0xaf, 0x42, 0x62,
-	 0x9c, 0xf8, 0x4f, 0x73, 0xe9, 0xdb, 0x9c, 0xe4}
+simple_ble_service_t service_handle = {
+    .uuid128 = {{0x83, 0xbe, 0xd0, 0x58, 0xf1, 0xaf, 0x42, 0x62,
+	             0x9c, 0xf8, 0x4f, 0x73, 0xe9, 0xdb, 0x9c, 0xe4}}
 };
-
-ble_uuid_t custom_service_uuid;
+simple_ble_char_t num_handle = {.uuid16 = CUSTOM_SERVICE_CHAR_NUMBER_SHORT_UUID};
 
 // Intervals for advertising and connections
 static simple_ble_config_t ble_config = {
@@ -48,6 +48,7 @@ static simple_ble_config_t ble_config = {
 
 // State for this CuSToM service application
 static ble_cstm_t cstm;
+
 
 /*******************************************************************************
  *   Timer Callback
@@ -64,7 +65,6 @@ static void timer_handler (void* p_context) {
  ******************************************************************************/
 
 static void timers_init(void) {
-	simple_timer_init();
 	simple_timer_start(1000, timer_handler);
 }
 
@@ -72,19 +72,14 @@ static void timers_init(void) {
 void services_init (void) {
 
     // Add custom service
-    cstm.service_handle = simple_ble_add_service(&custom_service_uuid128,
-                                                 &custom_service_uuid,
-                                                 CUSTOM_SERVICE_SHORT_UUID);
+    simple_ble_add_service(&service_handle);
 
     // Add the characteristic
-    simple_ble_add_characteristic(1, 0, 0,  // read, write, notify
-                                  custom_service_uuid.type,
-                                  CUSTOM_SERVICE_CHAR_NUMBER_SHORT_UUID,
+    simple_ble_add_characteristic(1, 0, 0, 0, // read, write, notify, vlen
                                   1, (uint8_t*) &cstm.num_value,
-                                  cstm.service_handle,
-                                  &cstm.num_handles);
+                                  &service_handle,
+                                  &num_handle);
 }
-
 
 int main(void) {
 
@@ -95,7 +90,7 @@ int main(void) {
 	simple_ble_init(&ble_config);
 
 	// Setup our advertisement
-	simple_adv_service(&custom_service_uuid);
+	simple_adv_service(&service_handle.uuid_handle);
 
 	// You must initialize and use app timers to initialize conn params
 	timers_init();
@@ -105,3 +100,4 @@ int main(void) {
 		power_manage();
 	}
 }
+
